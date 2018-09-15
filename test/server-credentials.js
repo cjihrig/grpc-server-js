@@ -151,31 +151,27 @@ describe('client credentials', () => {
     server = new Server();
     server.addService(proto.TestService.service, {
       unary (call, cb) {
-        // TODO: Revisit when sendMetadata() is implemented.
-        // call.sendMetadata(call.metadata);
+        call.sendMetadata(call.metadata);
         cb(null, {});
       },
 
       clientStream (stream, cb) {
         stream.on('data', noop);
         stream.on('end', () => {
-          // TODO: Revisit when sendMetadata() is implemented.
-          // stream.sendMetadata(stream.metadata);
+          stream.sendMetadata(stream.metadata);
           cb(null, {});
         });
       },
 
       serverStream (stream) {
-        // TODO: Revisit when sendMetadata() is implemented.
-        // stream.sendMetadata(stream.metadata);
+        stream.sendMetadata(stream.metadata);
         stream.end();
       },
 
       bidiStream (stream) {
         stream.on('data', noop);
         stream.on('end', () => {
-          // TODO: Revisit when sendMetadata() is implemented.
-          // stream.sendMetadata(stream.metadata);
+          stream.sendMetadata(stream.metadata);
           stream.end();
         });
       }
@@ -254,8 +250,7 @@ describe('client credentials', () => {
       updaterCreds = Grpc.credentials.createFromMetadataGenerator(metadataUpdater);
     });
 
-    // TODO: Revisit this. Expected metadata is not being sent back from the server.
-    it('Should update metadata on a unary call', { skip: true }, () => {
+    it('Should update metadata on a unary call', () => {
       const barrier = new Barrier(2);
       const call = client.unary({}, { credentials: updaterCreds }, (err, data) => {
         Assert.ifError(err);
@@ -270,8 +265,7 @@ describe('client credentials', () => {
       return barrier;
     });
 
-    // TODO: Revisit this. Expected metadata is not being sent back from the server.
-    it('should update metadata on a client streaming call', { skip: true }, () => {
+    it('should update metadata on a client streaming call', () => {
       const barrier = new Barrier(2);
       const call = client.clientStream({ credentials: updaterCreds }, (err, data) => {
         Assert.ifError(err);
@@ -287,8 +281,7 @@ describe('client credentials', () => {
       return barrier;
     });
 
-    // TODO: Revisit this. Expected metadata is not being sent back from the server.
-    it('should update metadata on a server streaming call', { skip: true }, () => {
+    it('should update metadata on a server streaming call', () => {
       const barrier = new Barrier();
       const call = client.serverStream({}, { credentials: updaterCreds });
 
@@ -301,8 +294,7 @@ describe('client credentials', () => {
       return barrier;
     });
 
-    // TODO: Revisit this. Expected metadata is not being sent back from the server.
-    it('should update metadata on a bidi streaming call', { skip: true }, () => {
+    it('should update metadata on a bidi streaming call', () => {
       const barrier = new Barrier();
       const call = client.bidiStream({ credentials: updaterCreds });
 
@@ -316,8 +308,7 @@ describe('client credentials', () => {
       return barrier;
     });
 
-    // TODO: Revisit this. Expected metadata is not being sent back from the server.
-    it('should be able to use multiple plugin credentials', { skip: true }, () => {
+    it('should be able to use multiple plugin credentials', () => {
       function altMetadataUpdater (serviceUrl, callback) {
         const metadata = new Grpc.Metadata();
 
