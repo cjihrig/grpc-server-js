@@ -7,8 +7,10 @@
 
 Pure JavaScript gRPC Server
 
-## Deviations from `grpc` Server
+## Public API Deviations from `grpc.Server`
 
 - `Server.prototype.bind()` is an `async` function.
+- The deprecated `Server.prototype.addProtoService()` is not implemented.
+- `Server.prototype.addHttp2Port()` is not implemented.
 - The `private_key` and `cert_chain` properties of `keyCertPair` instances have
   been renamed to `privateKey` and `certChain`.

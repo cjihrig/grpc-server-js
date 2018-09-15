@@ -190,7 +190,6 @@ describe('client credentials', () => {
   });
 
   after(() => {
-    // TODO: Use forceShutdown() once implemented.
     server.tryShutdown();
   });
 

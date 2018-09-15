@@ -94,8 +94,6 @@ describe('Client malformed response handling', () => {
 
   after(() => {
     server.tryShutdown();
-    // TODO: Use forceShutdown() once implemented.
-    // server.forceShutdown();
   });
 
   it('should get an INTERNAL status with a unary call', () => {
@@ -233,8 +231,6 @@ describe('Server serialization failure handling', () => {
 
   after(() => {
     server.tryShutdown();
-    // TODO: Use forceShutdown() once implemented.
-    // server.forceShutdown();
   });
 
   it('should get an INTERNAL status with a unary call', () => {
@@ -390,8 +386,6 @@ describe('Other conditions', () => {
 
   after(function () {
     server.tryShutdown();
-    // TODO: Use forceShutdown() once implemented.
-    // server.forceShutdown();
   });
 
   describe('Server receiving bad input', () => {
@@ -689,7 +683,7 @@ describe('Other conditions', () => {
       return barrier;
     });
 
-    // TODO: This test is skipped. Revisit this. It might be a Node issue.
+    // TODO: This test is skipped. Revisit this. The header needs to be encoded.
     it('for a UTF-8 error message', { skip: true }, () => {
       const barrier = new Barrier();
 

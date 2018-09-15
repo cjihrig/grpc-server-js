@@ -35,42 +35,6 @@ describe('Server', () => {
 
       Assert(server instanceof Server);
     });
-
-    it('should only accept objects with string or int values', () => {
-      // TODO: This test seems questionable.
-      // Assert.doesNotThrow(() => {
-      //   new Server({'key' : 'value'});
-      // });
-      // Assert.doesNotThrow(() => {
-      //   new Server({'key' : 5});
-      // });
-      // Assert.throws(() => {
-      //   new Server({'key' : null});
-      // });
-      // Assert.throws(() => {
-      //   new Server({'key' : new Date()});
-      // });
-    });
-  });
-
-  describe('addHttp2Port', function () {
-    // TODO: Revisit this.
-    // var server;
-    // before(function() {
-    //   server = new Server();
-    // });
-    // after(function() {
-    //   server.start();
-    //   server.forceShutdown();
-    // });
-    // it('should bind to an unused port', function() {
-    //   var port;
-    //   assert.doesNotThrow(function() {
-    //     port = server.addHttp2Port('0.0.0.0:0',
-    //                                ServerCredentials.createInsecure());
-    //   });
-    //   assert(port > 0);
-    // });
   });
 
   describe('start', () => {
@@ -78,14 +42,10 @@ describe('Server', () => {
 
     beforeEach(async () => {
       server = new Server();
-
-      // TODO: Address these lines.
       await server.bind(8000, ServerCredentials.createInsecure());
-      // server.addHttp2Port('0.0.0.0:0', ServerCredentials.createInsecure());
     });
 
     afterEach(() => {
-      // TODO: Use forceShutdown() once implemented.
       server.tryShutdown();
     });
 
@@ -165,8 +125,6 @@ describe('Server', () => {
 
     after(() => {
       server.tryShutdown();
-      // TODO: Use forceShutdown() once implemented.
-      // server.forceShutdown();
     });
 
     it('Should succeed with a single service', () => {
@@ -185,17 +143,6 @@ describe('Server', () => {
     it('Should allow method names as originally written', () => {
       Assert.doesNotThrow(() => {
         server.addService(mathServiceAttrs, altDummyImpls);
-      });
-    });
-
-    // TODO: Revisit this test. addProtoService() is deprecated.
-    it('Should have a conflict between name variations', { skip: true}, () => {
-      // This is really testing that both name variations are actually used,
-      // by checking that the method actually gets registered, for the
-      // corresponding function, in both cases.
-      server.addProtoService(mathServiceAttrs, altDummyImpls);
-      Assert.throws(() => {
-        server.addProtoService(mathServiceAttrs, dummyImpls);
       });
     });
 
@@ -300,8 +247,6 @@ describe('Server', () => {
 
     after(() => {
       server.tryShutdown();
-      // TODO: Use forceShutdown() once implemented.
-      // server.forceShutdown();
     });
 
     it('should echo the recieved message directly', () => {
@@ -316,8 +261,8 @@ describe('Server', () => {
       return barrier;
     });
 
-    // TODO: Revisit this test. Currently skipped. Crashing in client before
-    // making request to server.
+    // TODO: Revisit this test. Currently skipped. Crashing in client/protobuf
+    // before making request to server.
     it('Should convert an undefined argument to default values', { skip: true }, () => {
       const barrier = new Barrier();
 
@@ -377,8 +322,6 @@ describe('Server', () => {
 
       after(() => {
         server.tryShutdown();
-        // TODO: Use forceShutdown() once implemented.
-        // server.forceShutdown();
       });
 
       it('Should respond with a capitalized string', () => {
