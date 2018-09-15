@@ -16,7 +16,7 @@
   "scripts": {
     "lint": "belly-button -f",
     "pretest": "npm run lint",
-    "test": "lab -v -t 90"
+    "test": "lab -v -t 85"
   },
   "engines": {
     "node": ">=10.0.0"
