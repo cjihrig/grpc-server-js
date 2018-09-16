@@ -683,8 +683,7 @@ describe('Other conditions', () => {
       return barrier;
     });
 
-    // TODO: This test is skipped. Revisit this. The header needs to be encoded.
-    it('for a UTF-8 error message', { skip: true }, () => {
+    it('for a UTF-8 error message', () => {
       const barrier = new Barrier();
 
       client.unary({ error: true, message: '測試字符串' }, (err, data) => {
