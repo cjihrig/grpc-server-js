@@ -7,10 +7,36 @@
 
 Pure JavaScript gRPC Server
 
-## Public API Deviations from `grpc.Server`
+## Documentation
+
+The goal is to be largely compatible with the existing [`Server`](https://grpc.io/grpc/node/grpc.Server.html) and [`ServerCredentials`](https://grpc.io/grpc/node/grpc.ServerCredentials.html) documentation.
+
+## Features
+
+- Unary calls.
+- Streaming client request calls.
+- Streaming server response calls.
+- Bidirectional streaming calls.
+- Deadline and cancellation support.
+- Support for gzip and deflate compression, as well as uncompressed messages.
+- The only third party dependency is [`@grpc/grpc-js`](https://www.npmjs.com/package/@grpc/grpc-js), which is used for some shared data structures.
+- No C++ dependencies. This implementation relies on Node's [`http2`](https://nodejs.org/api/http2.html) module.
+
+## Public API Deviations from the Existing `grpc.Server`
 
 - `Server.prototype.bind()` is an `async` function.
 - The deprecated `Server.prototype.addProtoService()` is not implemented.
 - `Server.prototype.addHttp2Port()` is not implemented.
+- `Server.prototype.forceShutdown()` is not implemented.
 - The `private_key` and `cert_chain` properties of `keyCertPair` instances have
   been renamed to `privateKey` and `certChain`.
+
+## Acknowledgement
+
+This module is heavily inspired by the [`grpc`](https://www.npmjs.com/package/grpc) native module. Some of the source code is adapted from the [`@grpc/grpc-js`](https://www.npmjs.com/package/@grpc/grpc-js) module.
+
+## Useful References
+
+- [What is gRPC?](https://grpc.io/docs/guides/index.html)
+- [gRPC over HTTP2](https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md)
+- [gRPC Compression](https://github.com/grpc/grpc/blob/master/doc/compression.md)
