@@ -260,20 +260,6 @@ describe('Server', () => {
 
       return barrier;
     });
-
-    // TODO: Revisit this test. Currently skipped. Crashing in client/protobuf
-    // before making request to server.
-    it('Should convert an undefined argument to default values', { skip: true }, () => {
-      const barrier = new Barrier();
-
-      client.echo(undefined, (error, response) => {
-        Assert.ifError(error);
-        Assert.deepStrictEqual(response, { value: '', value2: 0 });
-        barrier.pass();
-      });
-
-      return barrier;
-    });
   });
 
   describe('Generic client and server', () => {
