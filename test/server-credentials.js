@@ -205,33 +205,6 @@ describe('client credentials', () => {
     return barrier;
   });
 
-  it('Verify callback receives correct arguments', () => {
-    const barrier = new Barrier();
-    let callbackHost;
-    let callbackCert;
-    const clientSslCreds = Grpc.credentials.createSsl(ca, null, null, {
-      checkServerIdentity (host, cert) {
-        callbackHost = host;
-        callbackCert = cert;
-      }
-    });
-    const client = new Client(`localhost:${port}`, clientSslCreds, clientOptions);
-
-    client.unary({}, (err, data) => {
-      Assert.ifError(err);
-
-      // TODO: These values don't seem to be set by the JavaScript client yet.
-      // If that changes in the future, update these assertions.
-      Assert.strictEqual(callbackHost, undefined);
-      Assert.strictEqual(callbackCert, undefined);
-
-      Assert.deepStrictEqual(data, { count: 0 });
-      barrier.pass();
-    });
-
-    return barrier;
-  });
-
   describe('Per-rpc creds', () => {
     let client;
     let updaterCreds;
