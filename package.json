@@ -1,6 +1,6 @@
 {
   "name": "grpc-server-js",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Pure JavaScript gRPC Server",
   "author": "Colin J. Ihrig <cjihrig@gmail.com> (http://www.cjihrig.com/)",
   "main": "lib/index.js",
