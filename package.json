@@ -22,13 +22,13 @@
     "node": ">=10.0.0"
   },
   "dependencies": {
-    "@grpc/grpc-js": "0.3.2"
+    "@grpc/grpc-js": "0.3.3"
   },
   "devDependencies": {
     "@grpc/proto-loader": "0.3.0",
     "belly-button": "5.x.x",
     "cb-barrier": "1.x.x",
-    "lab": "17.x.x"
+    "lab": "18.x.x"
   },
   "keywords": [
     "grpc"
