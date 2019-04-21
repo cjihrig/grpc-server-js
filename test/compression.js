@@ -1,7 +1,5 @@
 'use strict';
 const Assert = require('assert');
-// const Path = require('path');
-// const Barrier = require('cb-barrier');
 const Lab = require('lab');
 const Compression = require('../lib/compression-filter');
 
