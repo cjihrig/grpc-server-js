@@ -61,3 +61,5 @@ typings/
 
 dev-server.js
 dev-service.proto
+
+.node_bash_completion
