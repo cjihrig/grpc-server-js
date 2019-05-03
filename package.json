@@ -19,7 +19,7 @@
     "test": "lab -v -t 90"
   },
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=10.10.0"
   },
   "dependencies": {
     "@grpc/grpc-js": "0.4.0"
