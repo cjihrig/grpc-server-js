@@ -23,8 +23,8 @@ describe('ServerCredentials', () => {
     it('accepts a buffer and array as the first two arguments', () => {
       const creds = ServerCredentials.createSsl(ca, []);
 
-      Assert.strictEqual(creds.secure, true);
-      Assert.deepStrictEqual(creds.settings, {
+      Assert.strictEqual(creds._isSecure(), true);
+      Assert.deepStrictEqual(creds._getSettings(), {
         ca,
         cert: [],
         key: [],
@@ -35,8 +35,8 @@ describe('ServerCredentials', () => {
     it('accepts a boolean as the third argument', () => {
       const creds = ServerCredentials.createSsl(ca, [], true);
 
-      Assert.strictEqual(creds.secure, true);
-      Assert.deepStrictEqual(creds.settings, {
+      Assert.strictEqual(creds._isSecure(), true);
+      Assert.deepStrictEqual(creds._getSettings(), {
         ca,
         cert: [],
         key: [],
@@ -45,12 +45,12 @@ describe('ServerCredentials', () => {
     });
 
     it('accepts an object with two buffers in the second argument', () => {
-      const keyCertPairs = [{ privateKey: key, certChain: cert }];
+      const keyCertPairs = [{ private_key: key, cert_chain: cert }];
       const creds = ServerCredentials.createSsl(null, keyCertPairs);
 
-      Assert.strictEqual(creds.secure, true);
-      Assert.deepStrictEqual(creds.settings, {
-        ca: null,
+      Assert.strictEqual(creds._isSecure(), true);
+      Assert.deepStrictEqual(creds._getSettings(), {
+        ca: undefined,
         cert: [cert],
         key: [key],
         requestCert: false
@@ -59,14 +59,14 @@ describe('ServerCredentials', () => {
 
     it('accepts multiple objects in the second argument', () => {
       const keyCertPairs = [
-        { privateKey: key, certChain: cert },
-        { privateKey: key, certChain: cert }
+        { private_key: key, cert_chain: cert },
+        { private_key: key, cert_chain: cert }
       ];
       const creds = ServerCredentials.createSsl(null, keyCertPairs, false);
 
-      Assert.strictEqual(creds.secure, true);
-      Assert.deepStrictEqual(creds.settings, {
-        ca: null,
+      Assert.strictEqual(creds._isSecure(), true);
+      Assert.deepStrictEqual(creds._getSettings(), {
+        ca: undefined,
         cert: [cert, cert],
         key: [key, key],
         requestCert: false
@@ -101,25 +101,25 @@ describe('ServerCredentials', () => {
       }, /TypeError: keyCertPair\[0\] must be an object/);
     });
 
-    it('fails if the object does not have a Buffer privateKey', () => {
-      const keyCertPairs = [{ privateKey: 'test', certChain: cert }];
+    it('fails if the object does not have a Buffer private_key', () => {
+      const keyCertPairs = [{ private_key: 'test', cert_chain: cert }];
 
       Assert.throws(() => {
         ServerCredentials.createSsl(null, keyCertPairs);
-      }, /TypeError: keyCertPair\[0\].privateKey must be a Buffer/);
+      }, /TypeError: keyCertPair\[0\].private_key must be a Buffer/);
     });
 
-    it('fails if the object does not have a Buffer certChain', () => {
-      const keyCertPairs = [{ privateKey: key, certChain: 'test' }];
+    it('fails if the object does not have a Buffer cert_chain', () => {
+      const keyCertPairs = [{ private_key: key, cert_chain: 'test' }];
 
       Assert.throws(() => {
         ServerCredentials.createSsl(null, keyCertPairs);
-      }, /TypeError: keyCertPair\[0\].certChain must be a Buffer/);
+      }, /TypeError: keyCertPair\[0\].cert_chain must be a Buffer/);
     });
   });
 
   it('should bind to an unused port with ssl credentials', async () => {
-    const keyCertPairs = [{ privateKey: key, certChain: cert }];
+    const keyCertPairs = [{ private_key: key, cert_chain: cert }];
     const creds = ServerCredentials.createSsl(ca, keyCertPairs, true);
     const server = new Server();
 
@@ -177,7 +177,7 @@ describe('client credentials', () => {
       }
     });
 
-    const keyCertPairs = [{ privateKey: key, certChain: cert }];
+    const keyCertPairs = [{ private_key: key, cert_chain: cert }];
     const creds = ServerCredentials.createSsl(null, keyCertPairs);
     port = await server.bind('localhost:0', creds);
     server.start();

@@ -9,7 +9,7 @@ Pure JavaScript gRPC Server
 
 ## Documentation
 
-The goal is to be largely compatible with the existing [`Server`](https://grpc.io/grpc/node/grpc.Server.html) and [`ServerCredentials`](https://grpc.io/grpc/node/grpc.ServerCredentials.html) documentation.
+The goal is to be largely compatible with the existing [`Server`](https://grpc.io/grpc/node/grpc.Server.html) implementation.
 
 ## Features
 
@@ -28,8 +28,6 @@ The goal is to be largely compatible with the existing [`Server`](https://grpc.i
 - The deprecated `Server.prototype.addProtoService()` is not implemented.
 - `Server.prototype.addHttp2Port()` is not implemented.
 - `Server.prototype.forceShutdown()` is not implemented.
-- The `private_key` and `cert_chain` properties of `keyCertPair` instances have
-  been renamed to `privateKey` and `certChain`.
 
 ## Acknowledgement
 
