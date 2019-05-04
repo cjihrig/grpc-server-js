@@ -2,7 +2,7 @@
 const Assert = require('assert');
 const Path = require('path');
 const Barrier = require('cb-barrier');
-const Lab = require('lab');
+const Lab = require('@hapi/lab');
 const Grpc = require('@grpc/grpc-js');
 const { Server, ServerCredentials } = require('../lib');
 const { loadProtoFile } = require('./common');

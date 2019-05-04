@@ -1,6 +1,6 @@
 'use strict';
 const Assert = require('assert');
-const Lab = require('lab');
+const Lab = require('@hapi/lab');
 const Compression = require('../lib/compression-filter');
 
 // Test shortcuts
