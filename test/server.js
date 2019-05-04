@@ -292,4 +292,20 @@ describe('Server', () => {
       });
     });
   });
+
+  it('throws when unimplemented methods are called', () => {
+    const server = new Server();
+
+    Assert.throws(() => {
+      server.addProtoService();
+    }, /not implemented. use addService\(\) instead/);
+
+    Assert.throws(() => {
+      server.forceShutdown();
+    }, /not implemented/);
+
+    Assert.throws(() => {
+      server.addHttp2Port();
+    }, /not implemented/);
+  });
 });

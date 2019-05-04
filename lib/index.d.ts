@@ -128,13 +128,13 @@ export declare type HandleCall<RequestType, ResponseType> =
 
 export declare class Server {
   constructor(options?: object);
-  // addProtoService(): void;
+  addProtoService(): void;
   addService(service: ServiceDefinition, implementation: object): void;
   bind(port: string, creds: ServerCredentials): Promise<void>;
   // bindAsync(port: string,
   //           creds: ServerCredentials,
   //           callback: (error: Error | null, port: number) => void): void;
-  // forceShutdown(): void;
+  forceShutdown(): void;
   register<RequestType, ResponseType>(
     name: string,
     handler: HandleCall<RequestType, ResponseType>,
@@ -144,5 +144,5 @@ export declare class Server {
   ): boolean;
   start(): void;
   tryShutdown(callback: (error?: Error) => void): void;
-  // addHttp2Port(): void;
+  addHttp2Port(): void;
 }
