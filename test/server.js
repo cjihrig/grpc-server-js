@@ -91,6 +91,23 @@ describe('Server', () => {
       return barrier;
     });
 
+    it('handles errors while trying to bind', () => {
+      const server = new Server();
+      const barrier = new Barrier();
+
+      server.bindAsync('localhost:0', serverInsecureCreds, (err, port) => {
+        Assert.ifError(err);
+        Assert(typeof port === 'number' && port > 0);
+        server.bindAsync(`localhost:${port}`, serverInsecureCreds, (err, port) => {
+          Assert.strictEqual(err.code, 'EADDRINUSE');
+          Assert.strictEqual(port, -1);
+          barrier.pass();
+        });
+      });
+
+      return barrier;
+    });
+
     it('throws on invalid inputs', () => {
       const server = new Server();
 
@@ -142,6 +159,14 @@ describe('Server', () => {
       Assert.rejects(async () => {
         await server.bind('localhost:0', serverInsecureCreds);
       }, /server is already started/);
+    });
+
+    it('throws if the server is not bound', () => {
+      const server = new Server();
+
+      Assert.throws(() => {
+        server.start();
+      }, /server must be bound in order to start/);
     });
   });
 
