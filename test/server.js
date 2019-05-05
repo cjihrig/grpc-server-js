@@ -1,5 +1,6 @@
 'use strict';
 const Assert = require('assert');
+const Fs = require('fs');
 const Path = require('path');
 const Barrier = require('cb-barrier');
 const Lab = require('@hapi/lab');
@@ -34,6 +35,80 @@ describe('Server', () => {
       const server = new Server();
 
       Assert(server instanceof Server);
+    });
+  });
+
+  describe('bindAsync', () => {
+    it('binds with insecure credentials', () => {
+      const server = new Server();
+      const barrier = new Barrier();
+
+      server.bindAsync('localhost:0', serverInsecureCreds, (err, port) => {
+        Assert.ifError(err);
+        Assert(typeof port === 'number' && port > 0);
+        server.tryShutdown(() => {
+          barrier.pass();
+        });
+      });
+
+      return barrier;
+    });
+
+    it('binds with secure credentials', () => {
+      const server = new Server();
+      const barrier = new Barrier();
+      const ca = Fs.readFileSync(Path.join(__dirname, 'fixtures', 'ca.pem'));
+      const key = Fs.readFileSync(Path.join(__dirname, 'fixtures', 'server1.key'));
+      const cert = Fs.readFileSync(Path.join(__dirname, 'fixtures', 'server1.pem'));
+
+      const creds = ServerCredentials.createSsl(ca,
+        [{ private_key: key, cert_chain: cert }], true);
+
+      server.bindAsync('localhost:0', creds, (err, port) => {
+        Assert.ifError(err);
+        Assert(typeof port === 'number' && port > 0);
+        server.tryShutdown(() => {
+          barrier.pass();
+        });
+      });
+
+      return barrier;
+    });
+
+    it('throws if bind is called after the server is started', () => {
+      const server = new Server();
+      const barrier = new Barrier();
+
+      server.bindAsync('localhost:0', serverInsecureCreds, (err, port) => {
+        Assert.ifError(err);
+        server.start();
+        Assert.throws(() => {
+          server.bindAsync('localhost:0', serverInsecureCreds, () => {});
+        }, /server is already started/);
+        barrier.pass();
+      });
+
+      return barrier;
+    });
+
+    it('throws on invalid inputs', () => {
+      const server = new Server();
+
+      Assert.throws(() => {
+        server.bindAsync(null, serverInsecureCreds, () => {});
+      }, /port must be a string/);
+
+      Assert.throws(() => {
+        server.bindAsync('localhost:0', null, () => {});
+      }, /creds must be an object/);
+
+      Assert.throws(() => {
+        server.bindAsync('localhost:0', 'foo', () => {});
+      }, /creds must be an object/);
+
+      Assert.throws(() => {
+        server.bindAsync('localhost:0', serverInsecureCreds, null);
+      }, /callback must be a function/);
     });
   });
 

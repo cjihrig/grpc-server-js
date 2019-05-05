@@ -131,9 +131,9 @@ export declare class Server {
   addProtoService(): void;
   addService(service: ServiceDefinition, implementation: object): void;
   bind(port: string, creds: ServerCredentials): Promise<void>;
-  // bindAsync(port: string,
-  //           creds: ServerCredentials,
-  //           callback: (error: Error | null, port: number) => void): void;
+  bindAsync(port: string,
+            creds: ServerCredentials,
+            callback: (error: Error | null, port: number) => void): void;
   forceShutdown(): void;
   register<RequestType, ResponseType>(
     name: string,
