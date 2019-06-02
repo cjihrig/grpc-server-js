@@ -26,10 +26,10 @@
     "@grpc/grpc-js": "0.4.0"
   },
   "devDependencies": {
-    "@grpc/proto-loader": "0.5.0",
+    "@grpc/proto-loader": "0.5.x",
     "belly-button": "5.x.x",
     "cb-barrier": "1.x.x",
-    "@hapi/lab": "18.x.x"
+    "@hapi/lab": "19.x.x"
   },
   "keywords": [
     "grpc"
