@@ -295,6 +295,21 @@ describe('Server', () => {
     });
   });
 
+  describe('Server.prototype.tryShutdown', () => {
+    it('calls back with an error if the server is not bound', () => {
+      const barrier = new Barrier();
+      const server = new Server();
+
+      server.tryShutdown((err) => {
+        Assert(err);
+        Assert.strictEqual(err.message, 'server is not running');
+        barrier.pass();
+      });
+
+      return barrier;
+    });
+  });
+
   describe('Echo service', () => {
     let server;
     let client;
@@ -443,6 +458,43 @@ describe('Server', () => {
     makeRequest({ ':path': '/' });
     // Invalid Content-Type header.
     makeRequest({ ':path': '/', 'content-type': 'application/not-grpc' });
+    return barrier;
+  });
+
+  it('rejects connections if the server is bound but not started', async () => {
+    const barrier = new Barrier();
+    const server = new Server();
+    const port = await server.bind('localhost:0', serverInsecureCreds);
+    const protoFile = Path.join(__dirname, 'proto', 'echo_service.proto');
+    const { EchoService } = loadProtoFile(protoFile);
+    const client = new EchoService(`localhost:${port}`, clientInsecureCreds);
+
+    client.echo({ value: 'test value', value2: 3 }, (error, response) => {
+      Assert.strictEqual(error.code, Grpc.status.INTERNAL);
+      Assert.strictEqual(response, undefined);
+      server.tryShutdown();
+      barrier.pass();
+    });
+
+    return barrier;
+  });
+
+  it('returns UNIMPLEMENTED on 404', async () => {
+    const barrier = new Barrier();
+    const server = new Server();
+    const port = await server.bind('localhost:0', serverInsecureCreds);
+    const protoFile = Path.join(__dirname, 'proto', 'echo_service.proto');
+    const { EchoService } = loadProtoFile(protoFile);
+    const client = new EchoService(`localhost:${port}`, clientInsecureCreds);
+
+    server.start();
+    client.echo({ value: 'test value', value2: 3 }, (error, response) => {
+      Assert.strictEqual(error.code, Grpc.status.UNIMPLEMENTED);
+      Assert.strictEqual(response, undefined);
+      server.tryShutdown();
+      barrier.pass();
+    });
+
     return barrier;
   });
 });
