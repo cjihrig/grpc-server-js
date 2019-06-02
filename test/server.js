@@ -1,6 +1,7 @@
 'use strict';
 const Assert = require('assert');
 const Fs = require('fs');
+const Http2 = require('http2');
 const Path = require('path');
 const Barrier = require('cb-barrier');
 const Lab = require('@hapi/lab');
@@ -407,5 +408,41 @@ describe('Server', () => {
     Assert.throws(() => {
       server.addHttp2Port();
     }, /not implemented/);
+  });
+
+  it('responds with HTTP status of 415 on invalid content-type', async () => {
+    const barrier = new Barrier();
+    const server = new Server();
+    const port = await server.bind('localhost:0', serverInsecureCreds);
+    const client = Http2.connect(`http://localhost:${port}`);
+    let statusCode;
+    let count = 0;
+
+    server.start();
+
+    function makeRequest (headers) {
+      const req = client.request(headers);
+
+      req.on('response', (headers) => {
+        statusCode = headers[Http2.constants.HTTP2_HEADER_STATUS];
+      });
+
+      req.on('end', () => {
+        Assert.strictEqual(statusCode, Http2.constants.HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE);
+        count++;
+        if (count === 2) {
+          server.tryShutdown();
+          barrier.pass();
+        }
+      });
+
+      req.end();
+    }
+
+    // Missing Content-Type header.
+    makeRequest({ ':path': '/' });
+    // Invalid Content-Type header.
+    makeRequest({ ':path': '/', 'content-type': 'application/not-grpc' });
+    return barrier;
   });
 });
