@@ -446,6 +446,7 @@ describe('Server', () => {
         Assert.strictEqual(statusCode, Http2.constants.HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE);
         count++;
         if (count === 2) {
+          client.close();
           server.tryShutdown();
           barrier.pass();
         }
@@ -472,6 +473,7 @@ describe('Server', () => {
     client.echo({ value: 'test value', value2: 3 }, (error, response) => {
       Assert.strictEqual(error.code, Grpc.status.INTERNAL);
       Assert.strictEqual(response, undefined);
+      client.close();
       server.tryShutdown();
       barrier.pass();
     });
@@ -491,6 +493,7 @@ describe('Server', () => {
     client.echo({ value: 'test value', value2: 3 }, (error, response) => {
       Assert.strictEqual(error.code, Grpc.status.UNIMPLEMENTED);
       Assert.strictEqual(response, undefined);
+      client.close();
       server.tryShutdown();
       barrier.pass();
     });
