@@ -430,13 +430,13 @@ describe('Server', () => {
     const server = new Server();
     const port = await server.bind('localhost:0', serverInsecureCreds);
     const client = Http2.connect(`http://localhost:${port}`);
-    let statusCode;
     let count = 0;
 
     server.start();
 
     function makeRequest (headers) {
       const req = client.request(headers);
+      let statusCode;
 
       req.on('response', (headers) => {
         statusCode = headers[Http2.constants.HTTP2_HEADER_STATUS];
