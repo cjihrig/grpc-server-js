@@ -514,4 +514,44 @@ describe('Server', () => {
 
     return barrier;
   });
+
+  it('sends keepalive pings', async () => {
+    const barrier = new Barrier();
+    const server = new Server({
+      'grpc.keepalive_time_ms': 10,
+      'grpc.keepalive_timeout_ms': 1
+    });
+    const protoFile = Path.join(__dirname, 'proto', 'echo_service.proto');
+    const { EchoService } = loadProtoFile(protoFile);
+
+    server.addService(EchoService.service, {
+      echoBidiStream (stream) {
+        stream.on('data', (data) => {
+          Assert.fail('no data events expected on server');
+        });
+      }
+    });
+
+    const port = await server.bind('localhost:0', serverInsecureCreds);
+    const client = new EchoService(`localhost:${port}`, clientInsecureCreds);
+    server.start();
+    const stream = client.echoBidiStream();
+
+    stream.on('close', () => {
+      Assert.fail('close event not expected on client');
+    });
+
+    stream.on('end', () => {
+      Assert.fail('end event not expected on client');
+    });
+
+    stream.on('error', (err) => {
+      Assert(err);
+      client.close();
+      server.tryShutdown();
+      barrier.pass();
+    });
+
+    return barrier;
+  });
 });
