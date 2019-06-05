@@ -27,8 +27,22 @@ describe('Server', () => {
     });
 
     it('should work with an empty object argument', () => {
+      const options = {};
+
       Assert.doesNotThrow(() => {
-        new Server({}); // eslint-disable-line no-new
+        new Server(options); // eslint-disable-line no-new
+      });
+
+      // The constructor applies default values. Verify that the user's
+      // options are not overwritten.
+      Assert.deepStrictEqual(options, {});
+    });
+
+    it('throws if arguments are the wrong type', () => {
+      [null, 'foo', 5].forEach((value) => {
+        Assert.throws(() => {
+          new Server(value); // eslint-disable-line no-new
+        }, /TypeError: options must be an object/);
       });
     });
 
