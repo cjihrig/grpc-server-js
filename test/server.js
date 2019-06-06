@@ -554,4 +554,51 @@ describe('Server', () => {
 
     return barrier;
   });
+
+  it('handles multiple messages in a single frame', async () => {
+    const barrier = new Barrier();
+    const server = new Server();
+    const protoFile = Path.join(__dirname, 'proto', 'echo_service.proto');
+    const { EchoService } = loadProtoFile(protoFile);
+    let receivedCount = 0;
+
+    server.addService(EchoService.service, {
+      echoBidiStream (stream) {
+        stream.pause();
+
+        setImmediate(() => {
+          stream.resume();
+        });
+
+        stream.on('data', (data) => {
+          Assert.deepStrictEqual(data, { value: '', value2: 0 });
+          receivedCount++;
+
+          // The value 20 is dependent on the number of bytes that each message
+          // serializes to. If this test ever starts failing, it's likely due to
+          // a change in protobuf.js, and the expected number may change.
+          if (receivedCount === 20) {
+            stream.end();
+            client.close();     // eslint-disable-line no-use-before-define
+            server.tryShutdown();
+            barrier.pass();
+          }
+        });
+      }
+    });
+
+    const port = await server.bind('localhost:0', serverInsecureCreds);
+    server.start();
+
+    const client = Http2.connect(`http://localhost:${port}`);
+    const req = client.request({
+      [Http2.constants.HTTP2_HEADER_PATH]: '/EchoService/EchoBidiStream',
+      [Http2.constants.HTTP2_HEADER_METHOD]: 'POST',
+      [Http2.constants.HTTP2_HEADER_CONTENT_TYPE]: 'application/grpc'
+    });
+
+    req.write(Buffer.alloc(100));
+    req.end();
+    return barrier;
+  });
 });
