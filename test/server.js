@@ -485,7 +485,7 @@ describe('Server', () => {
     const client = new EchoService(`localhost:${port}`, clientInsecureCreds);
 
     client.echo({ value: 'test value', value2: 3 }, (error, response) => {
-      Assert.strictEqual(error.code, Grpc.status.INTERNAL);
+      Assert.strictEqual(error.code, Grpc.status.UNAVAILABLE);
       Assert.strictEqual(response, undefined);
       client.close();
       server.tryShutdown();
