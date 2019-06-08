@@ -53,6 +53,32 @@ describe('Server', () => {
     });
   });
 
+  describe('bind', () => {
+    it('uses insecure credentials by default', async () => {
+      const server = new Server();
+
+      server.bindAsync = function (port, creds, callback) {
+        Assert.strictEqual(creds._isSecure(), false);
+        callback(null, 1000);
+      };
+
+      await server.bind('localhost:0');
+      await server.bind('localhost:0', null);
+    });
+
+    it('handles errors during binding', async () => {
+      const server = new Server();
+
+      server.bindAsync = function (port, creds, callback) {
+        callback(new Error('test error'), -1);
+      };
+
+      await Assert.rejects(async () => {
+        await server.bind('localhost:0');
+      }, /^Error: test error$/);
+    });
+  });
+
   describe('bindAsync', () => {
     it('binds with insecure credentials', () => {
       const server = new Server();
@@ -236,6 +262,25 @@ describe('Server', () => {
       Assert.throws(() => {
         server.addService(mathServiceAttrs, dummyImpls);
       }, /Can't add a service to a started server\./);
+    });
+
+    it('fails trying to add an empty service', () => {
+      Assert.throws(() => {
+        server.addService({}, {});
+      }, /^Error: Cannot add an empty service to a server$/);
+    });
+
+    it('fails if both inputs are not objects', () => {
+      [
+        [null, {}],
+        ['foo', {}],
+        [{}, null],
+        [{}, 'foo']
+      ].forEach((inputs) => {
+        Assert.throws(() => {
+          server.addService(inputs[0], inputs[1]);
+        });
+      });
     });
 
     describe('Default handlers', () => {
@@ -599,6 +644,48 @@ describe('Server', () => {
 
     req.write(Buffer.alloc(100));
     req.end();
+    return barrier;
+  });
+
+  it('stream handlers can serialize and deserialize messages', async () => {
+    const barrier = new Barrier();
+    const server = new Server();
+    const protoFile = Path.join(__dirname, 'proto', 'echo_service.proto');
+    const { EchoService } = loadProtoFile(protoFile);
+
+    server.addService(EchoService.service, {
+      echoBidiStream (stream) {
+        stream.on('data', (data) => {
+          Assert.deepStrictEqual(data, { value: '', value2: 0 });
+          const bytes = stream.serialize(data);
+          const message = stream.deserialize(bytes);
+
+          // Verify serialize-deserialize functionality.
+          Assert(bytes instanceof Buffer);
+          Assert.deepStrictEqual(message, data);
+
+          // Verify handling of edge cases.
+          Assert.strictEqual(stream.serialize(null), null);
+          Assert.strictEqual(stream.serialize(undefined), null);
+          Assert.strictEqual(stream.deserialize(null), null);
+          Assert.strictEqual(stream.deserialize(undefined), null);
+          stream.end();
+        });
+      }
+    });
+
+    const port = await server.bind('localhost:0', serverInsecureCreds);
+    const client = new EchoService(`localhost:${port}`, clientInsecureCreds);
+    server.start();
+    const stream = client.echoBidiStream();
+
+    stream.write({});
+    stream.on('status', () => {
+      client.close();
+      server.tryShutdown();
+      barrier.pass();
+    });
+
     return barrier;
   });
 });
