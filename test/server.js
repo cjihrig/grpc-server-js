@@ -355,14 +355,116 @@ describe('Server', () => {
   });
 
   describe('Server.prototype.tryShutdown', () => {
-    it('calls back with an error if the server is not bound', () => {
+    it('calls back without an error if the server is not bound', () => {
       const barrier = new Barrier();
       const server = new Server();
 
       server.tryShutdown((err) => {
-        Assert(err);
-        Assert.strictEqual(err.message, 'server is not running');
+        Assert.ifError(err);
         barrier.pass();
+      });
+
+      return barrier;
+    });
+
+    it('is idempotent with itself', async () => {
+      const barrier = new Barrier();
+      const server = new Server();
+
+      await server.bind('localhost:0', serverInsecureCreds);
+      server.start();
+      server.tryShutdown((err) => {
+        Assert.ifError(err);
+        server.tryShutdown((err) => {
+          Assert.ifError(err);
+          barrier.pass();
+        });
+      });
+
+      return barrier;
+    });
+
+    it('is idempotent with forceShutdown()', async () => {
+      const barrier = new Barrier();
+      const server = new Server();
+
+      await server.bind('localhost:0', serverInsecureCreds);
+      server.start();
+      server.tryShutdown((err) => {
+        Assert.ifError(err);
+        server.forceShutdown();
+        barrier.pass();
+      });
+
+      return barrier;
+    });
+  });
+
+  describe('Server.prototype.forceShutdown', () => {
+    it('does not throw if the server is not bound', () => {
+      const server = new Server();
+
+      server.forceShutdown();
+    });
+
+    it('is idempotent with itself', async () => {
+      const server = new Server();
+
+      await server.bind('localhost:0', serverInsecureCreds);
+      server.start();
+      server.forceShutdown();
+      server.forceShutdown();
+    });
+
+    it('is idempotent with tryShutdown()', async () => {
+      const barrier = new Barrier();
+      const server = new Server();
+
+      await server.bind('localhost:0', serverInsecureCreds);
+      server.start();
+      server.forceShutdown();
+      server.tryShutdown((err) => {
+        Assert.ifError(err);
+        barrier.pass();
+      });
+
+      return barrier;
+    });
+
+    it('forcefully closes connections', async () => {
+      const barrier = new Barrier();
+      const server = new Server();
+      const protoFile = Path.join(__dirname, 'proto', 'echo_service.proto');
+      const { EchoService } = loadProtoFile(protoFile);
+      let calledForceShutdown = false;
+      let client; // eslint-disable-line prefer-const
+
+      server.addService(EchoService.service, {
+        echoBidiStream (stream) {
+          // Verify that forceShutdown() triggers tryShutdown().
+          server.tryShutdown(() => {
+            Assert.strictEqual(calledForceShutdown, true);
+            client.close();
+            barrier.pass();
+          });
+
+          stream.write({});
+        }
+      });
+
+      const port = await server.bind('localhost:0', serverInsecureCreds);
+      client = new EchoService(`localhost:${port}`, clientInsecureCreds);
+      server.start();
+      const stream = client.echoBidiStream();
+
+      stream.on('data', (message) => {
+        Assert.deepStrictEqual(message, { value: '', value2: 0 });
+        server.forceShutdown();
+        calledForceShutdown = true;
+      });
+
+      stream.on('error', (err) => {
+        Assert(err);
       });
 
       return barrier;
@@ -474,10 +576,6 @@ describe('Server', () => {
     Assert.throws(() => {
       server.addProtoService();
     }, /not implemented. use addService\(\) instead/);
-
-    Assert.throws(() => {
-      server.forceShutdown();
-    }, /not implemented/);
 
     Assert.throws(() => {
       server.addHttp2Port();

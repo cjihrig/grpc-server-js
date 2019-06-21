@@ -32,7 +32,6 @@ The goal is to be largely compatible with the existing [`Server`](https://grpc.i
 - `Server.prototype.bind()` is an `async` function.
 - The deprecated `Server.prototype.addProtoService()` is not implemented.
 - `Server.prototype.addHttp2Port()` is not implemented.
-- `Server.prototype.forceShutdown()` is not implemented.
 
 ## Useful References
 
