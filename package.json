@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@grpc/proto-loader": "0.5.x",
-    "belly-button": "5.x.x",
+    "belly-button": "6.x.x",
     "cb-barrier": "1.x.x",
     "@hapi/lab": "19.x.x"
   },
