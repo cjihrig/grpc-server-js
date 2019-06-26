@@ -42,10 +42,25 @@ export declare abstract class ServerCredentials {
 }
 
 
+export interface MetadataOptions {
+  // Signal that the request is idempotent. Defaults to false.
+  idempotentRequest?: boolean;
+  // Signal that the call should not return UNAVAILABLE before it has started.
+  // Defaults to true.
+  waitForReady?: boolean;
+  // Signal that the call is cacheable. gRPC is free to use the GET verb.
+  // Defaults to false.
+  cacheableRequest?: boolean;
+  // Signal that the initial metadata should be corked. Defaults to false.
+  corked?: boolean;
+}
+
 export declare type MetadataValue = string | Buffer;
 export declare type MetadataObject = Map<string, MetadataValue[]>;
 export declare class Metadata {
   protected internalRepr: MetadataObject;
+  private options?: MetadataOptions;
+  constructor(options?: MetadataOptions) {}
   set(key: string, value: MetadataValue): void;
   add(key: string, value: MetadataValue): void;
   remove(key: string): void;
@@ -54,6 +69,7 @@ export declare class Metadata {
   clone(): Metadata;
   merge(other: Metadata): void;
   toHttp2Headers(): http2.OutgoingHttpHeaders;
+  setOptions(options: MetadataOptions): void;
   static fromHttp2Headers(headers: http2.IncomingHttpHeaders): Metadata;
 }
 
