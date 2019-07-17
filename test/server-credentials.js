@@ -199,6 +199,7 @@ describe('client credentials', () => {
 
     client.unary({}, (err, data) => {
       Assert.ifError(err);
+      client.close();
       barrier.pass();
     });
 
@@ -220,6 +221,10 @@ describe('client credentials', () => {
       }
 
       updaterCreds = Grpc.credentials.createFromMetadataGenerator(metadataUpdater);
+    });
+
+    after(() => {
+      client.close();
     });
 
     it('Should update metadata on a unary call', () => {

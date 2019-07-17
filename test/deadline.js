@@ -43,6 +43,7 @@ describe('Deadlines', () => {
   });
 
   after(() => {
+    client.close();
     server.forceShutdown();
   });
 
@@ -117,6 +118,7 @@ describe('Cancellation', () => {
   });
 
   after(() => {
+    client.close();
     server.forceShutdown();
   });
 

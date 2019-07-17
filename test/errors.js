@@ -93,6 +93,7 @@ describe('Client malformed response handling', () => {
   });
 
   after(() => {
+    client.close();
     server.forceShutdown();
   });
 
@@ -230,6 +231,7 @@ describe('Server serialization failure handling', () => {
   });
 
   after(() => {
+    client.close();
     server.forceShutdown();
   });
 
@@ -385,6 +387,7 @@ describe('Other conditions', () => {
   });
 
   after(function () {
+    client.close();
     server.forceShutdown();
   });
 
@@ -427,6 +430,10 @@ describe('Other conditions', () => {
       const Client = Grpc.makeGenericClientConstructor(testServiceAttrs, 'TestService');
 
       misbehavingClient = new Client(`localhost:${port}`, clientInsecureCreds);
+    });
+
+    after(() => {
+      misbehavingClient.close();
     });
 
     it('should respond correctly to a unary call', () => {

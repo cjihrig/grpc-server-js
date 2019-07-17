@@ -292,6 +292,11 @@ describe('Server', () => {
         server.start();
       });
 
+      afterEach(() => {
+        client.close();
+        server.forceShutdown();
+      });
+
       it('should respond to a unary call with UNIMPLEMENTED', () => {
         const barrier = new Barrier();
 
@@ -491,6 +496,7 @@ describe('Server', () => {
     });
 
     after(() => {
+      client.close();
       server.forceShutdown();
     });
 
@@ -552,6 +558,7 @@ describe('Server', () => {
       });
 
       after(() => {
+        client.close();
         server.forceShutdown();
       });
 
