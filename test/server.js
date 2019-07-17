@@ -129,16 +129,19 @@ describe('Server', () => {
     });
 
     it('handles errors while trying to bind', () => {
-      const server = new Server();
+      const server1 = new Server();
+      const server2 = new Server();
       const barrier = new Barrier();
 
-      server.bindAsync('localhost:0', serverInsecureCreds, (err, port) => {
+      server1.bindAsync('localhost:0', serverInsecureCreds, (err, port) => {
         Assert.ifError(err);
         Assert(typeof port === 'number' && port > 0);
-        server.bindAsync(`localhost:${port}`, serverInsecureCreds, (err, port) => {
+        server2.bindAsync(`localhost:${port}`, serverInsecureCreds, (err, port) => {
           Assert.strictEqual(err.code, 'EADDRINUSE');
           Assert.strictEqual(port, -1);
-          server.tryShutdown(barrier.pass);
+          server1.tryShutdown(() => {
+            server2.tryShutdown(barrier.pass);
+          });
         });
       });
 
