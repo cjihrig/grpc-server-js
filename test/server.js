@@ -233,8 +233,8 @@ describe('Server', () => {
       server = new Server();
     });
 
-    after(() => {
-      server.tryShutdown();
+    afterEach(() => {
+      server.forceShutdown();
     });
 
     it('Should succeed with a single service', () => {
@@ -780,7 +780,7 @@ describe('Server', () => {
     stream.write({});
     stream.on('status', () => {
       client.close();
-      server.tryShutdown();
+      server.forceShutdown();
       barrier.pass();
     });
 
