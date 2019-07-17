@@ -101,6 +101,8 @@ export interface StatusObject {
 }
 
 export declare type ServiceError = StatusObject & Error;
+export declare type ServerStatusResponse = Partial<StatusObject>;
+export declare type ServerErrorResponse = ServerStatusResponse & Error;
 
 
 declare type ServerSurfaceCall = {
@@ -119,7 +121,7 @@ export declare type ServerDuplexStream<RequestType, ResponseType> =
 
 
 export declare type sendUnaryData<ResponseType> =
-    (error: ServiceError | null,
+    (error: ServerErrorResponse | ServerStatusResponse | null,
      value: ResponseType | null,
      trailer?: Metadata,
      flags?: number) => void;
@@ -142,10 +144,17 @@ export declare type HandleCall<RequestType, ResponseType> =
     handleBidiStreamingCall<RequestType, ResponseType>;
 
 
+export declare type UntypedHandleCall = HandleCall<any, any>;
+export interface UntypedServiceImplementation {
+  [name: string]: UntypedHandleCall;
+}
+
+
 export declare class Server {
   constructor(options?: object);
   addProtoService(): void;
-  addService(service: ServiceDefinition, implementation: object): void;
+  addService(service: ServiceDefinition,
+             implementation: UntypedServiceImplementation): void;
   bind(port: string, creds: ServerCredentials): Promise<void>;
   bindAsync(port: string,
             creds: ServerCredentials,
