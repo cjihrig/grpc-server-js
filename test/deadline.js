@@ -43,7 +43,7 @@ describe('Deadlines', () => {
   });
 
   after(() => {
-    server.tryShutdown();
+    server.forceShutdown();
   });
 
   it('works with deadlines', () => {
@@ -117,7 +117,7 @@ describe('Cancellation', () => {
   });
 
   after(() => {
-    server.tryShutdown();
+    server.forceShutdown();
   });
 
   it('handles requests cancelled by the client', () => {

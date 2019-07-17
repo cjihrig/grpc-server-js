@@ -93,7 +93,7 @@ describe('Client malformed response handling', () => {
   });
 
   after(() => {
-    server.tryShutdown();
+    server.forceShutdown();
   });
 
   it('should get an INTERNAL status with a unary call', () => {
@@ -230,7 +230,7 @@ describe('Server serialization failure handling', () => {
   });
 
   after(() => {
-    server.tryShutdown();
+    server.forceShutdown();
   });
 
   it('should get an INTERNAL status with a unary call', () => {
@@ -385,7 +385,7 @@ describe('Other conditions', () => {
   });
 
   after(function () {
-    server.tryShutdown();
+    server.forceShutdown();
   });
 
   describe('Server receiving bad input', () => {

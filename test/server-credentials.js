@@ -125,7 +125,7 @@ describe('ServerCredentials', () => {
 
     await server.bind('localhost:0', creds);
     server.start();
-    server.tryShutdown();
+    server.forceShutdown();
   });
 
   it('should bind to an unused port with insecure credentials', async () => {
@@ -133,7 +133,7 @@ describe('ServerCredentials', () => {
 
     await server.bind('localhost:0', ServerCredentials.createInsecure());
     server.start();
-    server.tryShutdown();
+    server.forceShutdown();
   });
 });
 
@@ -190,7 +190,7 @@ describe('client credentials', () => {
   });
 
   after(() => {
-    server.tryShutdown();
+    server.forceShutdown();
   });
 
   it('Should accept SSL creds for a client', () => {

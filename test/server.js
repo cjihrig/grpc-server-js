@@ -87,9 +87,7 @@ describe('Server', () => {
       server.bindAsync('localhost:0', serverInsecureCreds, (err, port) => {
         Assert.ifError(err);
         Assert(typeof port === 'number' && port > 0);
-        server.tryShutdown(() => {
-          barrier.pass();
-        });
+        server.tryShutdown(barrier.pass);
       });
 
       return barrier;
@@ -108,9 +106,7 @@ describe('Server', () => {
       server.bindAsync('localhost:0', creds, (err, port) => {
         Assert.ifError(err);
         Assert(typeof port === 'number' && port > 0);
-        server.tryShutdown(() => {
-          barrier.pass();
-        });
+        server.tryShutdown(barrier.pass);
       });
 
       return barrier;
@@ -126,7 +122,7 @@ describe('Server', () => {
         Assert.throws(() => {
           server.bindAsync('localhost:0', serverInsecureCreds, () => {});
         }, /server is already started/);
-        barrier.pass();
+        server.tryShutdown(barrier.pass);
       });
 
       return barrier;
@@ -142,7 +138,7 @@ describe('Server', () => {
         server.bindAsync(`localhost:${port}`, serverInsecureCreds, (err, port) => {
           Assert.strictEqual(err.code, 'EADDRINUSE');
           Assert.strictEqual(port, -1);
-          barrier.pass();
+          server.tryShutdown(barrier.pass);
         });
       });
 
@@ -179,7 +175,7 @@ describe('Server', () => {
     });
 
     afterEach(() => {
-      server.tryShutdown();
+      server.forceShutdown();
     });
 
     it('should start without error', () => {
@@ -492,7 +488,7 @@ describe('Server', () => {
     });
 
     after(() => {
-      server.tryShutdown();
+      server.forceShutdown();
     });
 
     it('should echo the recieved message directly', () => {
@@ -553,7 +549,7 @@ describe('Server', () => {
       });
 
       after(() => {
-        server.tryShutdown();
+        server.forceShutdown();
       });
 
       it('Should respond with a capitalized string', () => {
@@ -604,8 +600,7 @@ describe('Server', () => {
         count++;
         if (count === 2) {
           client.close();
-          server.tryShutdown();
-          barrier.pass();
+          server.tryShutdown(barrier.pass);
         }
       });
 
@@ -631,8 +626,7 @@ describe('Server', () => {
       Assert.strictEqual(error.code, Grpc.status.UNAVAILABLE);
       Assert.strictEqual(response, undefined);
       client.close();
-      server.tryShutdown();
-      barrier.pass();
+      server.tryShutdown(barrier.pass);
     });
 
     return barrier;
@@ -651,8 +645,7 @@ describe('Server', () => {
       Assert.strictEqual(error.code, Grpc.status.UNIMPLEMENTED);
       Assert.strictEqual(response, undefined);
       client.close();
-      server.tryShutdown();
-      barrier.pass();
+      server.tryShutdown(barrier.pass);
     });
 
     return barrier;
@@ -691,8 +684,7 @@ describe('Server', () => {
     stream.on('error', (err) => {
       Assert(err);
       client.close();
-      server.tryShutdown();
-      barrier.pass();
+      server.tryShutdown(barrier.pass);
     });
 
     return barrier;
@@ -723,8 +715,7 @@ describe('Server', () => {
           if (receivedCount === 20) {
             stream.end();
             client.close();     // eslint-disable-line no-use-before-define
-            server.tryShutdown();
-            barrier.pass();
+            server.tryShutdown(barrier.pass);
           }
         });
       }
