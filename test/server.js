@@ -500,7 +500,7 @@ describe('Server', () => {
       server.forceShutdown();
     });
 
-    it('should echo the recieved message directly', () => {
+    it('should echo the received message directly', () => {
       const barrier = new Barrier();
 
       client.echo({ value: 'test value', value2: 3 }, (error, response) => {
@@ -783,6 +783,41 @@ describe('Server', () => {
       client.close();
       server.forceShutdown();
       barrier.pass();
+    });
+
+    return barrier;
+  });
+
+  it('can serve traffic on multiple ports', async () => {
+    const barrier = new Barrier();
+    const protoFile = Path.join(__dirname, 'proto', 'echo_service.proto');
+    const { EchoService } = loadProtoFile(protoFile);
+    const server = new Server();
+
+    server.addService(EchoService.service, {
+      echo (call, callback) {
+        callback(null, call.request);
+      }
+    });
+
+    const port1 = await server.bind('localhost:0', serverInsecureCreds);
+    const port2 = await server.bind('localhost:0', serverInsecureCreds);
+    Assert.notStrictEqual(port1, port2);
+    server.start();
+    const client1 = new EchoService(`localhost:${port1}`, clientInsecureCreds);
+    const client2 = new EchoService(`localhost:${port2}`, clientInsecureCreds);
+
+    client1.echo({ value: 'test value', value2: 3 }, (error, response) => {
+      Assert.ifError(error);
+      Assert.deepStrictEqual(response, { value: 'test value', value2: 3 });
+      client2.echo({ value: 'test two', value2: 99 }, (error, response) => {
+        Assert.ifError(error);
+        Assert.deepStrictEqual(response, { value: 'test two', value2: 99 });
+        client1.close();
+        client2.close();
+        server.forceShutdown();
+        barrier.pass();
+      });
     });
 
     return barrier;
