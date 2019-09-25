@@ -59,7 +59,7 @@ export declare type MetadataValue = string | Buffer;
 export declare type MetadataObject = Map<string, MetadataValue[]>;
 export declare class Metadata {
   protected internalRepr: MetadataObject;
-  private options?: MetadataOptions;
+  private options: MetadataOptions;
   constructor(options?: MetadataOptions) {}
   set(key: string, value: MetadataValue): void;
   add(key: string, value: MetadataValue): void;
@@ -70,6 +70,7 @@ export declare class Metadata {
   merge(other: Metadata): void;
   toHttp2Headers(): http2.OutgoingHttpHeaders;
   setOptions(options: MetadataOptions): void;
+  getOptions(): MetadataOptions;
   static fromHttp2Headers(headers: http2.IncomingHttpHeaders): Metadata;
 }
 

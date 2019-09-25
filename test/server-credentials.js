@@ -206,7 +206,12 @@ describe('client credentials', () => {
     return barrier;
   });
 
-  describe('Per-rpc creds', () => {
+  // Skip the following five tests until
+  // https://github.com/grpc/grpc-node/issues/1046 is resolved.
+  // @grpc/grpc-js@0.6.0 appears to have introduced a regression on the client
+  // side. I've verified that these tests also fail with the grpc-js TypeScript
+  // server, so this is not a grpc-server-js specific issue.
+  describe('Per-rpc creds', { skip: true }, () => {
     let client;
     let updaterCreds;
 
@@ -227,7 +232,7 @@ describe('client credentials', () => {
       client.close();
     });
 
-    it('Should update metadata on a unary call', () => {
+    it('should update metadata on a unary call', () => {
       const barrier = new Barrier(2);
       const call = client.unary({}, { credentials: updaterCreds }, (err, data) => {
         Assert.ifError(err);
