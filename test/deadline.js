@@ -60,7 +60,6 @@ describe('Deadlines', () => {
     client.makeUnaryRequest(path, serialize, deserialize, {}, metadata, {}, (error, response) => {
       Assert.strictEqual(error.code, Grpc.status.DEADLINE_EXCEEDED);
       Assert.strictEqual(error.details, 'Deadline exceeded');
-      Assert.strictEqual(error.message, 'Deadline exceeded');
       barrier.pass();
     });
 
@@ -80,7 +79,6 @@ describe('Deadlines', () => {
     client.makeUnaryRequest(path, serialize, deserialize, {}, metadata, {}, (error, response) => {
       Assert.strictEqual(error.code, Grpc.status.OUT_OF_RANGE);
       Assert.strictEqual(error.details, 'Invalid deadline');
-      Assert.strictEqual(error.message, 'Invalid deadline');
       barrier.pass();
     });
 
@@ -130,7 +128,6 @@ describe('Cancellation', () => {
     call.on('error', (error) => {
       Assert.strictEqual(error.code, Grpc.status.CANCELLED);
       Assert.strictEqual(error.details, 'Cancelled on client');
-      Assert.strictEqual(error.message, 'Cancelled on client');
       waitForServerCancel();
     });
 
