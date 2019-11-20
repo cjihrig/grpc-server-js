@@ -702,6 +702,20 @@ describe('Other conditions', () => {
 
       return barrier;
     });
+
+    // TODO(cjihrig): @grpc/grpc-js@0.6.13 should handle this properly.
+    it('for an error message containing a comma', { skip: true }, () => {
+      const barrier = new Barrier();
+
+      client.unary({ error: true, message: 'foo, bar, and baz' }, (err, data) => {
+        Assert(err);
+        Assert.strictEqual(err.code, Grpc.status.UNKNOWN);
+        Assert.strictEqual(err.details, 'foo, bar, and baz');
+        barrier.pass();
+      });
+
+      return barrier;
+    });
   });
 });
 
