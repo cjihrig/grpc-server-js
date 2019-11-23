@@ -151,8 +151,25 @@ export interface UntypedServiceImplementation {
 }
 
 
+export interface ChannelOptions {
+  'grpc.http2.max_frame_size'?: string;
+  'grpc.ssl_target_name_override'?: string;
+  'grpc.primary_user_agent'?: string;
+  'grpc.secondary_user_agent'?: string;
+  'grpc.default_authority'?: string;
+  'grpc.keepalive_time_ms'?: number;
+  'grpc.keepalive_timeout_ms'?: number;
+  'grpc.service_config'?: string;
+  'grpc.max_concurrent_streams'?: number;
+  'grpc.initial_reconnect_backoff_ms'?: number;
+  'grpc.max_reconnect_backoff_ms'?: number;
+  'grpc.use_local_subchannel_pool'?: number;
+  [key: string]: string | number | undefined;
+}
+
+
 export declare class Server {
-  constructor(options?: object);
+  constructor(options?: ChannelOptions);
   addProtoService(): void;
   addService(service: ServiceDefinition,
              implementation: UntypedServiceImplementation): void;
