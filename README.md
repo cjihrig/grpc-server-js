@@ -25,6 +25,7 @@ The goal is to be largely compatible with the existing [`Server`](https://grpc.i
   - `grpc.http2.max_frame_size`
   - `grpc.keepalive_time_ms`
   - `grpc.keepalive_timeout_ms`
+  - `grpc.max_concurrent_streams`
   - All possible options and their descriptions are available [here](https://github.com/grpc/grpc/blob/master/include/grpc/impl/codegen/grpc_types.h).
 
 ## Public API Deviations from the Existing `grpc.Server`
