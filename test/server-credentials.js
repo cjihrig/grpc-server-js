@@ -27,6 +27,7 @@ describe('ServerCredentials', () => {
       Assert.deepStrictEqual(creds._getSettings(), {
         ca,
         cert: [],
+        ciphers: undefined,
         key: [],
         requestCert: false
       });
@@ -39,6 +40,7 @@ describe('ServerCredentials', () => {
       Assert.deepStrictEqual(creds._getSettings(), {
         ca,
         cert: [],
+        ciphers: undefined,
         key: [],
         requestCert: true
       });
@@ -52,6 +54,7 @@ describe('ServerCredentials', () => {
       Assert.deepStrictEqual(creds._getSettings(), {
         ca: undefined,
         cert: [cert],
+        ciphers: undefined,
         key: [key],
         requestCert: false
       });
@@ -68,6 +71,7 @@ describe('ServerCredentials', () => {
       Assert.deepStrictEqual(creds._getSettings(), {
         ca: undefined,
         cert: [cert, cert],
+        ciphers: undefined,
         key: [key, key],
         requestCert: false
       });
