@@ -703,8 +703,7 @@ describe('Other conditions', () => {
       return barrier;
     });
 
-    // TODO(cjihrig): @grpc/grpc-js@0.6.13 should handle this properly.
-    it('for an error message containing a comma', { skip: true }, () => {
+    it('for an error message containing a comma', () => {
       const barrier = new Barrier();
 
       client.unary({ error: true, message: 'foo, bar, and baz' }, (err, data) => {
