@@ -300,9 +300,11 @@ describe('Other conditions', () => {
 
   before(async () => {
     const trailerMetadata = new Grpc.Metadata();
+    const existingMetadata = new Grpc.Metadata();
 
     server = new Server();
     trailerMetadata.add('trailer-present', 'yes');
+    existingMetadata.add('existing-present', 'yes');
 
     server.addService(TestServiceClient.service, {
       unary (call, cb) {
@@ -310,11 +312,16 @@ describe('Other conditions', () => {
 
         if (req.error) {
           const details = req.message || 'Requested error';
-
-          cb({
+          const response = {
             code: Grpc.status.UNKNOWN,
             details
-          }, null, trailerMetadata);
+          };
+
+          if (req.message === 'existing-metadata') {
+            response.metadata = existingMetadata;
+          }
+
+          cb(response, null, trailerMetadata);
         } else {
           cb(null, { count: 1 }, trailerMetadata);
         }
@@ -627,6 +634,24 @@ describe('Other conditions', () => {
 
       return barrier;
     });
+  });
+
+  it('existing metadata is not overwritten when a unary call fails', () => {
+    const barrier = new Barrier(2);
+    const call = client.unary({
+      error: true,
+      message: 'existing-metadata'
+    }, (err, data) => {
+      Assert(err);
+      barrier.pass();
+    });
+
+    call.on('status', (status) => {
+      Assert.deepStrictEqual(status.metadata.get('existing-present'), ['yes']);
+      barrier.pass();
+    });
+
+    return barrier;
   });
 
   describe('Error object should contain the status', () => {
