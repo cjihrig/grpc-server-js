@@ -41,6 +41,7 @@ The goal is to be largely compatible with the existing [`Server`](https://grpc.i
 - [gRPC Compression](https://github.com/grpc/grpc/blob/master/doc/compression.md)
 - [gRPC Environment Variables](https://github.com/grpc/grpc/blob/master/doc/environment_variables.md)
 - [gRPC Keepalive](https://github.com/grpc/grpc/blob/master/doc/keepalive.md)
+- [gRPC Name Resolution](https://github.com/grpc/grpc/blob/master/doc/naming.md)
 - [gRPC Status Codes](https://github.com/grpc/grpc/blob/master/doc/statuscodes.md)
 
 ## Acknowledgement
