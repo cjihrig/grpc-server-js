@@ -75,6 +75,16 @@ export declare class Metadata {
 }
 
 
+export declare enum LogVerbosity {
+  DEBUG = 0,
+  INFO = 1,
+  ERROR = 2
+}
+
+export declare const setLogger: (logger: Partial<Console>) => void;
+export declare const setLogVerbosity: (verbosity: LogVerbosity) => void;
+
+
 export declare enum Status {
   OK = 0,
   CANCELLED = 1,
@@ -189,3 +199,8 @@ export declare class Server {
   tryShutdown(callback: (error?: Error) => void): void;
   addHttp2Port(): void;
 }
+
+export {
+  LogVerbosity as logVerbosity,
+  Status as status
+};
