@@ -22,10 +22,8 @@
   "engines": {
     "node": ">=10.10.0"
   },
-  "dependencies": {
-    "@grpc/grpc-js": "^0.6.17"
-  },
   "devDependencies": {
+    "@grpc/grpc-js": "^0.6.17",
     "@grpc/proto-loader": "0.5.x",
     "belly-button": "6.x.x",
     "cb-barrier": "1.x.x",
