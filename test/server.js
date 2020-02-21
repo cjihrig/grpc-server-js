@@ -303,6 +303,7 @@ describe('Server', () => {
         client.div({ divisor: 4, dividend: 3 }, (error, response) => {
           Assert(error);
           Assert.strictEqual(error.code, Grpc.status.UNIMPLEMENTED);
+          Assert.strictEqual(error.details, 'The server does not implement the method Div');
           barrier.pass();
         });
 
@@ -314,6 +315,7 @@ describe('Server', () => {
         const call = client.sum((error, respones) => {
           Assert(error);
           Assert.strictEqual(error.code, Grpc.status.UNIMPLEMENTED);
+          Assert.strictEqual(error.details, 'The server does not implement the method Sum');
           barrier.pass();
         });
 
@@ -332,6 +334,7 @@ describe('Server', () => {
         call.on('error', (err) => {
           Assert(err);
           Assert.strictEqual(err.code, Grpc.status.UNIMPLEMENTED);
+          Assert.strictEqual(err.details, 'The server does not implement the method Fib');
           barrier.pass();
         });
 
@@ -348,6 +351,7 @@ describe('Server', () => {
 
         call.on('error', (err) => {
           Assert.strictEqual(err.code, Grpc.status.UNIMPLEMENTED);
+          Assert.strictEqual(err.details, 'The server does not implement the method DivMany');
           barrier.pass();
         });
 
@@ -653,6 +657,7 @@ describe('Server', () => {
     server.start();
     client.echo({ value: 'test value', value2: 3 }, (error, response) => {
       Assert.strictEqual(error.code, Grpc.status.UNIMPLEMENTED);
+      Assert.strictEqual(error.details, 'The server does not implement the method /EchoService/Echo');
       Assert.strictEqual(response, undefined);
       client.close();
       server.tryShutdown(barrier.pass);
