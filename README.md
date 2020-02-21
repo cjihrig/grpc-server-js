@@ -13,13 +13,16 @@ The goal is to be largely compatible with the existing [`Server`](https://grpc.i
 
 ## Features
 
-- Unary calls.
-- Streaming client request calls.
-- Streaming server response calls.
-- Bidirectional streaming calls.
+- [Unary calls](https://grpc.github.io/grpc/node/grpc-ServerUnaryCall.html).
+- [Streaming client request calls](https://grpc.github.io/grpc/node/grpc-ServerReadableStream.html).
+- [Streaming server response calls](https://grpc.github.io/grpc/node/grpc-ServerWritableStream.html).
+- [Bidirectional streaming calls](https://grpc.github.io/grpc/node/grpc-ServerDuplexStream.html).
 - Deadline and cancellation support.
 - Support for gzip and deflate compression, as well as uncompressed messages.
-- The only third party dependency is [`@grpc/grpc-js`](https://www.npmjs.com/package/@grpc/grpc-js), which is used for some shared data structures.
+- [Server credentials](https://grpc.github.io/grpc/node/grpc.ServerCredentials.html) for handling both secure and insecure calls.
+- [gRPC Metadata](https://grpc.github.io/grpc/node/grpc.Metadata.html).
+- gRPC logging.
+- No production dependencies.
 - No C++ dependencies. This implementation relies on Node's [`http2`](https://nodejs.org/api/http2.html) module.
 - Supports the following gRPC server options:
   - `grpc.http2.max_frame_size`
@@ -27,6 +30,11 @@ The goal is to be largely compatible with the existing [`Server`](https://grpc.i
   - `grpc.keepalive_timeout_ms`
   - `grpc.max_concurrent_streams`
   - All possible options and their descriptions are available [here](https://github.com/grpc/grpc/blob/master/include/grpc/impl/codegen/grpc_types.h).
+- Supports the following gRPC environment variables:
+  - `GRPC_DEFAULT_SSL_ROOTS_FILE_PATH`
+  - `GRPC_SSL_CIPHER_SUITES`
+  - `GRPC_VERBOSITY`
+  - All possible environment variables and their descriptions are available [here](https://github.com/grpc/grpc/blob/master/doc/environment_variables.md).
 
 ## Public API Deviations from the Existing `grpc.Server`
 
