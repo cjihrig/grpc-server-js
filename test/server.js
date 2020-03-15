@@ -789,6 +789,7 @@ describe('Server', () => {
       server.forceShutdown();
       barrier.pass();
     });
+    stream.end();
 
     return barrier;
   });
