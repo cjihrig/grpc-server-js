@@ -828,4 +828,104 @@ describe('Server', () => {
 
     return barrier;
   });
+
+  describe('Unix Domain Socket Support', () => {
+    const protoFile = Path.join(__dirname, 'proto', 'echo_service.proto');
+    const { EchoService } = loadProtoFile(protoFile);
+    const tmpDir = Path.join(__dirname, '.tmpdir');
+    let counter = 0;
+
+    async function runTest (path) {
+      const barrier = new Barrier();
+      const server = new Server();
+
+      server.addService(EchoService.service, {
+        echo (call, callback) {
+          callback(null, call.request);
+        }
+      });
+
+      const port = await server.bind(path, serverInsecureCreds);
+      Assert.strictEqual(port, undefined);
+      server.start();
+      const client = new EchoService(path, clientInsecureCreds);
+
+      client.echo({ value: 'test value', value2: 42 }, (error, response) => {
+        Assert.ifError(error);
+        Assert.deepStrictEqual(response, { value: 'test value', value2: 42 });
+        client.close();
+        server.forceShutdown();
+        barrier.pass();
+      });
+
+      return barrier;
+    }
+
+    function getAbsolutePath () {
+      const file = Path.join(tmpDir, `test-sock-${counter++}`);
+
+      if (process.platform === 'win32') {
+        return Path.join('\\\\.\\pipe\\', file);
+      }
+
+      return file;
+    }
+
+    function getRelativePath () {
+      const file = Path.join(Path.relative(process.cwd(), tmpDir),
+        `test-sock-${counter++}`);
+
+      if (process.platform === 'win32') {
+        return Path.join('\\\\.\\pipe\\', file);
+      }
+
+      return file;
+    }
+
+    function cleanup () {
+      try {
+        Fs.readdirSync(tmpDir).forEach((entry) => {
+          try {
+            Fs.unlinkSync(entry);
+          } catch (ignoreErr) {}
+        });
+
+        Fs.rmdirSync(tmpDir);
+      } catch (ignoreErr) {}
+    }
+
+    before(() => {
+      try {
+        cleanup();
+        Fs.mkdirSync(tmpDir);
+      } catch (ignoreErr) {}
+    });
+
+    after(() => {
+      cleanup();
+    });
+
+    it('handles unix: followed by an absolute path', async () => {
+      const path = `unix:${getAbsolutePath()}`;
+      await runTest(path);
+    });
+
+    it('handles unix: followed by a relative path', async () => {
+      const path = `unix:${getRelativePath()}`;
+      await runTest(path);
+    });
+
+    it('handles unix:// followed by an absolute path', async () => {
+      const path = `unix://${getAbsolutePath()}`;
+      await runTest(path);
+    });
+
+    // Skip on Windows, as the pipe prefix is required, and makes it an absolute path.
+    it('throws if unix:// is followed by a relative path', { skip: process.platform === 'win32' }, async () => {
+      const path = `unix://${getRelativePath()}`;
+      await Assert.rejects(async () => {
+        await runTest(path);
+      }, /must specify an absolute path/);
+    });
+  });
 });
