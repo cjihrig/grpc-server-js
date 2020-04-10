@@ -41,7 +41,7 @@ describe('Server Resolver', () => {
       ],
       [
         resolveToListenOptions('unix:/foo/bar1', false),
-        { path: '/foo/bar1' }
+        { path: Path.resolve('/foo/bar1') }
       ],
       [
         resolveToListenOptions('unix:./foo/../baz/bar2', false),
