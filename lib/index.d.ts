@@ -22,10 +22,6 @@ export interface MethodDefinition<RequestType, ResponseType> {
   originalName?: string;
 }
 
-export interface ServiceDefinition {
-  [index: string]: MethodDefinition<object, object>;
-}
-
 
 export declare type KeyCertPair = {
   private_key: Buffer;
@@ -60,7 +56,7 @@ export declare type MetadataObject = Map<string, MetadataValue[]>;
 export declare class Metadata {
   protected internalRepr: MetadataObject;
   private options: MetadataOptions;
-  constructor(options?: MetadataOptions) {}
+  constructor(options?: MetadataOptions);
   set(key: string, value: MetadataValue): void;
   add(key: string, value: MetadataValue): void;
   remove(key: string): void;
@@ -158,6 +154,10 @@ export declare type HandleCall<RequestType, ResponseType> =
 export declare type UntypedHandleCall = HandleCall<any, any>;
 export interface UntypedServiceImplementation {
   [name: string]: UntypedHandleCall;
+}
+
+export declare type ServiceDefinition<ImplementationType = UntypedServiceImplementation> = {
+  readonly [index in keyof ImplementationType]: MethodDefinition<any, any>;
 }
 
 
