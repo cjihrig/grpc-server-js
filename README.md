@@ -1,7 +1,7 @@
 # grpc-server-js
 
 [![Current Version](https://img.shields.io/npm/v/grpc-server-js.svg)](https://www.npmjs.org/package/grpc-server-js)
-[![Build Status via Travis CI](https://travis-ci.org/cjihrig/grpc-server-js.svg?branch=master)](https://travis-ci.org/cjihrig/grpc-server-js)
+![grpc-server-js CI](https://github.com/cjihrig/grpc-server-js/workflows/grpc-server-js%20CI/badge.svg)
 ![Dependencies](http://img.shields.io/david/cjihrig/grpc-server-js.svg)
 [![belly-button-style](https://img.shields.io/badge/eslint-bellybutton-4B32C3.svg)](https://github.com/cjihrig/belly-button)
 
