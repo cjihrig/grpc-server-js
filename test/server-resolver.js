@@ -40,16 +40,16 @@ describe('Server Resolver', () => {
         { host: 'localhost', port: 80 }
       ],
       [
-        resolveToListenOptions('unix:/foo/bar', false),
-        { path: '/foo/bar' }
+        resolveToListenOptions('unix:/foo/bar1', false),
+        { path: '/foo/bar1' }
       ],
       [
-        resolveToListenOptions('unix:./foo/../baz/bar', false),
-        { path: Path.join(process.cwd(), 'baz', 'bar') }
+        resolveToListenOptions('unix:./foo/../baz/bar2', false),
+        { path: Path.join(process.cwd(), 'baz', 'bar2') }
       ],
       [
-        resolveToListenOptions('unix:///foo/bar', false),
-        { path: '/foo/bar' }
+        resolveToListenOptions('unix:///foo/bar3', false),
+        { path: '/foo/bar3' }
       ]
     ].forEach(([actual, expected]) => {
       Assert.deepStrictEqual(actual, expected);
