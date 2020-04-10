@@ -59,6 +59,7 @@ typings/
 
 .vscode
 
+dev-client.js
 dev-server.js
 dev-service.proto
 
