@@ -19,6 +19,15 @@ const cert = Fs.readFileSync(Path.join(__dirname, 'fixtures', 'server1.pem'));
 
 
 describe('ServerCredentials', () => {
+  describe('createInsecure', () => {
+    it('creates an InsecureServerCredentials instance', () => {
+      const creds = ServerCredentials.createInsecure();
+
+      Assert.strictEqual(creds._isSecure(), false);
+      Assert.strictEqual(creds._getSettings(), null);
+    });
+  });
+
   describe('createSsl', () => {
     it('accepts a buffer and array as the first two arguments', () => {
       const creds = ServerCredentials.createSsl(ca, []);

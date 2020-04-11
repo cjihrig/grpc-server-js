@@ -176,10 +176,12 @@ describe('Metadata', () => {
       metadata.add('Key2', 'value2');
       metadata.add('KEY3', 'value3a');
       metadata.add('KEY3', 'value3b');
+      metadata.add('key4-bin', Buffer.from('value4'));
       Assert.deepStrictEqual(metadata.getMap(), {
         key1: 'value1',
         key2: 'value2',
-        key3: 'value3a'
+        key3: 'value3a',
+        'key4-bin': Buffer.from('value4')
       });
     });
   });
