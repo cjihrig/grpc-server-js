@@ -928,4 +928,68 @@ describe('Server', () => {
       }, /must specify an absolute path/);
     });
   });
+
+
+  describe('Maximum Message Size', () => {
+    const protoFile = Path.join(__dirname, 'proto', 'echo_service.proto');
+    const { EchoService } = loadProtoFile(protoFile);
+
+    async function runTest (settings) {
+      const barrier = new Barrier();
+      const server = new Server(settings);
+
+      server.addService(EchoService.service, {
+        echo (call, callback) {
+          callback(null, { value: call.request.value });
+        },
+        echoBidiStream (stream) {
+          stream.on('data', (chunk) => {
+            stream.write({ value: chunk.value });
+          });
+        }
+      });
+
+      const port = await server.bind('localhost:0', serverInsecureCreds);
+      server.start();
+      const client = new EchoService(`localhost:${port}`, clientInsecureCreds);
+
+      // Test a unary send/receive.
+      client.echo({ value: 'a' }, (error, response) => {
+        Assert.strictEqual(error.code, Grpc.status.RESOURCE_EXHAUSTED);
+        if (settings['grpc.max_receive_message_length']) {
+          Assert.strictEqual(error.details, 'Received message larger than max (8 vs. 1)');
+        } else {
+          Assert.strictEqual(error.details, 'Sent message larger than max (8 vs. 1)');
+        }
+        Assert.strictEqual(response, undefined);
+
+        // Test a streaming send/receive.
+        const call = client.echoBidiStream();
+        call.on('data', () => { throw new Error('should not happen'); });
+        call.on('error', (error) => {
+          Assert.strictEqual(error.code, Grpc.status.RESOURCE_EXHAUSTED);
+          if (settings['grpc.max_receive_message_length']) {
+            Assert.strictEqual(error.details, 'Received message larger than max (9 vs. 1)');
+          } else {
+            Assert.strictEqual(error.details, 'Sent message larger than max (9 vs. 1)');
+          }
+          client.close();
+          server.forceShutdown();
+          barrier.pass();
+        });
+
+        call.write({ value: 'bc' });
+      });
+
+      return barrier;
+    }
+
+    it('enforces maximum received message length', async () => {
+      await runTest({ 'grpc.max_receive_message_length': 1 });
+    });
+
+    it('enforces maximum sent message length', async () => {
+      await runTest({ 'grpc.max_send_message_length': 1 });
+    });
+  });
 });

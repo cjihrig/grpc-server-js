@@ -29,6 +29,8 @@ The goal is to be largely compatible with the existing [`Server`](https://grpc.i
   - `grpc.keepalive_time_ms`
   - `grpc.keepalive_timeout_ms`
   - `grpc.max_concurrent_streams`
+  - `grpc.max_receive_message_length`
+  - `grpc.max_send_message_length`
   - All possible options and their descriptions are available [here](https://github.com/grpc/grpc/blob/master/include/grpc/impl/codegen/grpc_types.h).
 - Supports the following gRPC environment variables:
   - `GRPC_DEFAULT_SSL_ROOTS_FILE_PATH`
