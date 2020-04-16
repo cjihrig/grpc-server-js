@@ -16,6 +16,10 @@ describe('Server Resolver', () => {
   it('resolveToListenOptions() successfully parses inputs', () => {
     [
       [
+        resolveToListenOptions('dns:localhost:81', true),
+        { host: 'localhost', port: 81 }
+      ],
+      [
         resolveToListenOptions('dns:127.0.0.1:9999', true),
         { host: '127.0.0.1', port: 9999 }
       ],
@@ -32,11 +36,43 @@ describe('Server Resolver', () => {
         { host: 'localhost', port: 8080 }
       ],
       [
+        resolveToListenOptions('[::1]:123', true),
+        { host: '[::1]', port: 123 }
+      ],
+      [
+        resolveToListenOptions('[::1]', true),
+        { host: '[::1]', port: 443 }
+      ],
+      [
+        resolveToListenOptions('[::1]:80', true),
+        { host: '[::1]', port: 80 }
+      ],
+      [
         resolveToListenOptions('localhost', true),
         { host: 'localhost', port: 443 }
       ],
       [
         resolveToListenOptions('localhost', false),
+        { host: 'localhost', port: 80 }
+      ],
+      [
+        resolveToListenOptions('localhost:80', false),
+        { host: 'localhost', port: 80 }
+      ],
+      [
+        resolveToListenOptions('localhost:80', true),
+        { host: 'localhost', port: 80 }
+      ],
+      [
+        resolveToListenOptions('localhost:81', true),
+        { host: 'localhost', port: 81 }
+      ],
+      [
+        resolveToListenOptions('localhost:443', false),
+        { host: 'localhost', port: 443 }
+      ],
+      [
+        resolveToListenOptions('dns:///localhost', false),
         { host: 'localhost', port: 80 }
       ],
       [
