@@ -23,7 +23,7 @@
     "node": ">=10.10.0"
   },
   "devDependencies": {
-    "@grpc/grpc-js": "^0.8.1",
+    "@grpc/grpc-js": "1.x.x",
     "@grpc/proto-loader": "0.5.x",
     "belly-button": "6.x.x",
     "cb-barrier": "1.x.x",
