@@ -114,6 +114,7 @@ export declare type ServerErrorResponse = ServerStatusResponse & Error;
 
 declare type ServerSurfaceCall = {
   cancelled: boolean;
+  readonly metadata: Metadata;
   getPeer(): string;
   sendMetadata(responseMetadata: Metadata): void;
 };
