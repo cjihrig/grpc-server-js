@@ -930,7 +930,6 @@ describe('Server', () => {
     });
   });
 
-
   describe('Maximum Message Size', () => {
     const protoFile = Path.join(__dirname, 'proto', 'echo_service.proto');
     const { EchoService } = loadProtoFile(protoFile);
@@ -991,6 +990,72 @@ describe('Server', () => {
 
     it('enforces maximum sent message length', async () => {
       await runTest({ 'grpc.max_send_message_length': 1 });
+    });
+  });
+
+
+  describe('No stream end events on error', () => {
+    const protoFile = Path.join(__dirname, 'proto', 'echo_service.proto');
+    const { EchoService } = loadProtoFile(protoFile);
+
+    async function getTestSetup () {
+      const barrier = new Barrier();
+      const server = new Server();
+
+      server.addService(EchoService.service, {
+        echoClientStream (stream, callback) {
+          stream.on('end', () => {
+            throw new Error('should not happen');
+          });
+
+          stream.on('data', (chunk) => {
+            throw new Error('client-stream-error');
+          });
+        },
+        echoBidiStream (stream) {
+          stream.on('end', () => {
+            throw new Error('should not happen');
+          });
+
+          stream.on('data', (chunk) => {
+            throw new Error('bidi-stream-error');
+          });
+        }
+      });
+
+      const port = await server.bind('localhost:0', serverInsecureCreds);
+      server.start();
+      const client = new EchoService(`localhost:${port}`, clientInsecureCreds);
+      return { barrier, client, server };
+    }
+
+    it('does not emit end event on server for client stream', async () => {
+      const { barrier, client, server } = await getTestSetup();
+      const stream = client.echoClientStream((err, data) => {
+        client.close();
+        server.forceShutdown();
+        Assert.strictEqual(err.details, 'client-stream-error');
+        Assert.strictEqual(data, undefined);
+        barrier.pass();
+      });
+
+      stream.write({});
+      return barrier;
+    });
+
+    it('does not emit end event on server for bidi stream', async () => {
+      const { barrier, client, server } = await getTestSetup();
+      const stream = client.echoBidiStream();
+
+      stream.on('error', (err) => {
+        client.close();
+        server.forceShutdown();
+        Assert.strictEqual(err.details, 'bidi-stream-error');
+        barrier.pass();
+      });
+
+      stream.write({});
+      return barrier;
     });
   });
 });
