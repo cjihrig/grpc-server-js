@@ -25,7 +25,7 @@
   "devDependencies": {
     "@grpc/grpc-js": "1.x.x",
     "@grpc/proto-loader": "0.5.x",
-    "belly-button": "6.x.x",
+    "belly-button": "7.x.x",
     "cb-barrier": "1.x.x",
     "@hapi/lab": "22.x.x"
   },
