@@ -278,6 +278,8 @@ describe('Metadata', () => {
         key1: 'value1',
         key2: ['value2'],
         key3: ['value3a', 'value3b'],
+        key4: ['key4a, key4b'],
+        key5: 'value5a, value5b',
         'key-bin': [
           'AAECAwQFBgcICQoLDA0ODw==',
           'EBESExQVFhcYGRobHB0eHw==',
@@ -290,6 +292,8 @@ describe('Metadata', () => {
         ['key1', ['value1']],
         ['key2', ['value2']],
         ['key3', ['value3a', 'value3b']],
+        ['key4', ['key4a, key4b']],
+        ['key5', ['value5a, value5b']],
         [
           'key-bin',
           [
