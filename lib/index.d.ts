@@ -123,9 +123,12 @@ export declare type ServerUnaryCall<RequestType, ResponseType> =
 export declare type ServerReadableStream<RequestType, ResponseType> =
     ServerSurfaceCall & Readable;
 export declare type ServerWritableStream<RequestType, ResponseType> =
-    ServerSurfaceCall & Writable & { request: RequestType | null; };
+    ServerSurfaceCall & Writable & {
+      request: RequestType | null;
+      end: (metadata?: Metadata) => void;
+    };
 export declare type ServerDuplexStream<RequestType, ResponseType> =
-    ServerSurfaceCall & Duplex;
+    ServerSurfaceCall & Duplex & { end: (metadata?: Metadata) => void; };
 
 
 export declare type sendUnaryData<ResponseType> =
