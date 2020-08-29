@@ -841,6 +841,7 @@ describe('Server', () => {
 
       server.addService(EchoService.service, {
         echo (call, callback) {
+          Assert.strictEqual(call.getPeer(), 'unknown');
           callback(null, call.request);
         }
       });

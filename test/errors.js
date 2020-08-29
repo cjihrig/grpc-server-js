@@ -1,5 +1,6 @@
 'use strict';
 const Assert = require('assert');
+const Net = require('net');
 const Path = require('path');
 const Barrier = require('cb-barrier');
 const Lab = require('@hapi/lab');
@@ -306,9 +307,19 @@ describe('Other conditions', () => {
     trailerMetadata.add('trailer-present', 'yes');
     existingMetadata.add('existing-present', 'yes');
 
+    function validatePeer (call) {
+      const [peerAddress, peerPort] = call.getPeer().split(':');
+
+      Assert(Net.isIP(peerAddress));
+      Assert.strictEqual(String(Number(peerPort)), peerPort);
+      Assert(Number.isSafeInteger(Number(peerPort)));
+    }
+
     server.addService(TestServiceClient.service, {
       unary (call, cb) {
         const req = call.request;
+
+        validatePeer(call);
 
         if (req.error) {
           const details = req.message || 'Requested error';
@@ -331,6 +342,8 @@ describe('Other conditions', () => {
         let count = 0;
         let errored;
 
+        validatePeer(stream);
+
         stream.on('data', (data) => {
           if (data.error) {
             const message = data.message || 'Requested error';
@@ -351,6 +364,8 @@ describe('Other conditions', () => {
       serverStream (stream) {
         const req = stream.request;
 
+        validatePeer(stream);
+
         if (req.error) {
           stream.emit('error', {
             code: Grpc.status.UNKNOWN,
@@ -367,6 +382,8 @@ describe('Other conditions', () => {
       },
 
       bidiStream (stream) {
+        validatePeer(stream);
+
         let count = 0;
         stream.on('data', (data) => {
           if (data.error) {
