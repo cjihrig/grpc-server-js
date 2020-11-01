@@ -164,6 +164,7 @@ describe('client credentials', () => {
     server = new Server();
     server.addService(proto.TestService.service, {
       unary (call, cb) {
+        Assert.strictEqual(call.getDeadline(), Infinity);
         call.sendMetadata(call.metadata);
         cb(null, {});
       },
@@ -171,17 +172,20 @@ describe('client credentials', () => {
       clientStream (stream, cb) {
         stream.on('data', noop);
         stream.on('end', () => {
+          Assert.strictEqual(stream.getDeadline(), Infinity);
           stream.sendMetadata(stream.metadata);
           cb(null, {});
         });
       },
 
       serverStream (stream) {
+        Assert.strictEqual(stream.getDeadline(), Infinity);
         stream.sendMetadata(stream.metadata);
         stream.end();
       },
 
       bidiStream (stream) {
+        Assert.strictEqual(stream.getDeadline(), Infinity);
         stream.on('data', noop);
         stream.on('end', () => {
           stream.sendMetadata(stream.metadata);

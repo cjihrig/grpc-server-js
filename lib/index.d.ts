@@ -3,6 +3,9 @@ import * as http2 from 'http2';
 import { Duplex, Readable, Writable } from 'stream';
 
 
+export type Deadline = Date | number;
+
+
 export interface Serialize<T> {
   (value: T): Buffer;
 }
@@ -117,6 +120,7 @@ declare type ServerSurfaceCall = {
   readonly metadata: Metadata;
   getPeer(): string;
   sendMetadata(responseMetadata: Metadata): void;
+  getDeadline(): Deadline;
 };
 export declare type ServerUnaryCall<RequestType, ResponseType> =
     ServerSurfaceCall & { request: RequestType | null; };
