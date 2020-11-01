@@ -201,6 +201,7 @@ export declare class Server {
     deserialize: Deserialize<RequestType>,
     type: string
   ): boolean;
+  unregister(name: string): boolean;
   start(): void;
   tryShutdown(callback: (error?: Error) => void): void;
   addHttp2Port(): void;

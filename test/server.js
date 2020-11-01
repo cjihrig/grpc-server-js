@@ -210,6 +210,61 @@ describe('Server', () => {
     });
   });
 
+  describe('Server.prototype.unregister', () => {
+    const mathProtoFile = Path.join(__dirname, 'proto', 'math.proto');
+    const MathClient = loadProtoFile(mathProtoFile).math.Math;
+    const mathServiceAttrs = MathClient.service;
+
+    let server;
+    let client;
+
+    beforeEach(() => {
+      const barrier = new Barrier();
+      server = new Server();
+      server.addService(mathServiceAttrs, {
+        div (call, callback) {
+          callback(null, { quotient: '42' });
+        }
+      });
+      server.bindAsync('localhost:0', serverInsecureCreds, (err, port) => {
+        Assert.ifError(err);
+        client = new MathClient(`localhost:${port}`, clientInsecureCreds);
+        server.start();
+        barrier.pass();
+      });
+      return barrier;
+    });
+
+    afterEach(() => {
+      client.close();
+      server.forceShutdown();
+    });
+
+    it('removes existing handler', () => {
+      const barrier = new Barrier();
+
+      client.div({ divisor: 4, dividend: 3 }, (err, result) => {
+        Assert.ifError(err);
+        Assert.deepStrictEqual(result, { quotient: '42', remainder: '0' });
+
+        const name = mathServiceAttrs['Div'].path;
+        Assert.strictEqual(server.unregister(name), true);
+
+        client.div({ divisor: 4, dividend: 3 }, (err) => {
+          Assert(err);
+          Assert.strictEqual(err.code, Grpc.status.UNIMPLEMENTED);
+          barrier.pass();
+        });
+      });
+
+      return barrier;
+    });
+
+    it('returns false for unknown handler', () => {
+      Assert.strictEqual(server.unregister('does-not-exist'), false);
+    });
+  });
+
   describe('Server.prototype.addService', () => {
     const mathProtoFile = Path.join(__dirname, 'proto', 'math.proto');
     const MathClient = loadProtoFile(mathProtoFile).math.Math;
