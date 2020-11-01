@@ -255,12 +255,10 @@ describe('Server', () => {
       });
     });
 
-    it('Should fail if the server has been started', async () => {
+    it('Should succeed even if the server has already been started', async () => {
       await server.bind('localhost:0', serverInsecureCreds);
       server.start();
-      Assert.throws(() => {
-        server.addService(mathServiceAttrs, dummyImpls);
-      }, /Can't add a service to a started server\./);
+      server.addService(mathServiceAttrs, dummyImpls);
     });
 
     it('fails trying to add an empty service', () => {
