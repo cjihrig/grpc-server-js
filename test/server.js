@@ -415,6 +415,71 @@ describe('Server', () => {
     });
   });
 
+  describe('Server.prototype.removeService', () => {
+    const mathProtoFile = Path.join(__dirname, 'proto', 'math.proto');
+    const MathClient = loadProtoFile(mathProtoFile).math.Math;
+    const mathServiceAttrs = MathClient.service;
+    const dummyImpls = {
+      div () {},
+      divMany () {},
+      fib () {},
+      sum () {}
+    };
+
+    let server;
+    let client;
+
+    beforeEach(() => {
+      const barrier = new Barrier();
+      server = new Server();
+      server.addService(mathServiceAttrs, dummyImpls);
+      server.bindAsync('localhost:0', serverInsecureCreds, (err, port) => {
+        Assert.ifError(err);
+        client = new MathClient(`localhost:${port}`, clientInsecureCreds);
+        server.start();
+        barrier.pass();
+      });
+      return barrier;
+    });
+
+    afterEach(() => {
+      client.close();
+      server.forceShutdown();
+    });
+
+    it('removes a service', () => {
+      const barrier = new Barrier();
+      server.removeService(mathServiceAttrs);
+
+      let methodsVerifiedCount = 0;
+      const methodsToVerify = Object.keys(mathServiceAttrs);
+
+      const assertFailsWithUnimplementedError = (err) => {
+        Assert(err);
+        Assert.strictEqual(err.code, Grpc.status.UNIMPLEMENTED);
+        methodsVerifiedCount++;
+        if (methodsVerifiedCount === methodsToVerify.length) {
+          barrier.pass();
+        }
+      };
+
+      methodsToVerify.forEach((method) => {
+        const call = client[method]({}, assertFailsWithUnimplementedError);
+        call.on('error', assertFailsWithUnimplementedError);
+      });
+
+      return barrier;
+    });
+
+    it('fails if input is not an object', () => {
+      [undefined, null, 'foo', 5, true].forEach((input) => {
+        Assert.throws(() => {
+          server.removeService(input);
+        }, /^Error: removeService requires an object argument$/);
+      });
+    });
+  });
+
   describe('Server.prototype.tryShutdown', () => {
     it('calls back without an error if the server is not bound', () => {
       const barrier = new Barrier();

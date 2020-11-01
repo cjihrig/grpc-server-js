@@ -189,6 +189,7 @@ export declare class Server {
   addProtoService(): void;
   addService(service: ServiceDefinition,
              implementation: UntypedServiceImplementation): void;
+  removeService(service: ServiceDefinition): void;
   bind(port: string, creds: ServerCredentials): Promise<void>;
   bindAsync(port: string,
             creds: ServerCredentials,
